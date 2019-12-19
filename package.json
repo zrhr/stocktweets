@@ -1,0 +1,22 @@
+{
+  "name": "twitstocks",
+  "version": "1.0.0",
+  "description": "Track tweets about stock!",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server",
+    "heroku-postbuild": "cd react-ui/ && npm install && npm install --only=dev --no-shrinkwrap && npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "\u0016"
+  },
+  "author": "Daniel Wilson",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "get-twitter-bearer-token": "^1.0.0",
+    "twitter": "^1.7.1"
+  }
+}
