@@ -16,7 +16,7 @@ const toggleCollapse = () => {
       <MDBNavbar color="default-color" dark expand="md">
         <Container>
          <MDBNavbarBrand >
-         <strong className="white-text">Gig Economy Compare</strong>
+         <strong className="white-text">Stock Tip Hack</strong>
         </MDBNavbarBrand>
         <MDBNavbarToggler onClick={()=>toggleCollapse()} />
         <MDBCollapse id="navbarCollapse3" isOpen={isOpen} navbar>
@@ -25,9 +25,7 @@ const toggleCollapse = () => {
           </MDBNavbarNav>
           <MDBNavbarNav right>
             <MDBNavItem>
-              <MDBNavLink className="waves-effect waves-light" to="#!">
-                <MDBIcon fab icon="twitter" />
-              </MDBNavLink>
+             
             </MDBNavItem>
             
           </MDBNavbarNav>

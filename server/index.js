@@ -32,7 +32,7 @@ if (cluster.isMaster) {
 
   // Answer API requests.
   app.get('/api/twits/:stock', async function (req, res){
-    var responseData
+    var responseData;
     const twitsData = (stock)=>{
         return fetch(`https://api.stocktwits.com/api/2/streams/symbol/${stock}.json`)
     }
@@ -40,14 +40,17 @@ if (cluster.isMaster) {
         const twits = await twitsData(req.params.stock);
         responseData = await twits.json()
         console.log(responseData);
+        res.send(responseData);
+
     }
     processData();
-    setTimeout(()=>{
-        res.set('Content-Type', 'application/json');
-              res.send(responseData);
-            res.end},500)
+    // setTimeout(()=>{
+        
+    //           res.send(responseData);
+    //           res.end()
+    //         },100)
   });
-  
+
   app.get('/api/twitter/:stock', function (req, res) {
     var key = process.env.TWITTER_CONSUMER_KEY;
     var secret = process.env.TWITTER_SECRET_KEY;

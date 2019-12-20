@@ -1,48 +1,69 @@
 import React from 'react';
 import {useEffect, useState} from 'react';
-import {receivePosts, addRatings, addToCompare} from '../actions/tweets.js';
-import {connect} from 'react-redux';
-import InfoCard from '.components/InfoCard'
-import Header from '.components/Header'
-import Sidebar from '.components/Sidebar'
-import {MDBCol, MDBRow, MDBCard, MDBCardImage, MDBContainer} from 'mdbreact';
-function App({tweets, receivePosts, ownProps}) {
+
+import moment from 'moment'
+import InfoCard from './components/InfoCard'
+import Header from './components/Header'
+import Sidebar from './components/Sidebar'
+import {MDBCol, MDBBtn, MDBRow, MDBCard, MDBCardImage, MDBContainer, MDBSpinner} from 'mdbreact';
+function App() {
   const [loaded,
       setLoaded] = useState(false)
   const [update,
       setUpdate] = useState(false)
- 
+ const [tweets, setTweets]=useState([]);
   const [searchTerm,
       setSearchTerm] = useState([]);
   const [searchType,
       setSearchType] = useState("");
   useEffect(() => {
-      console.log(ownProps)
-      receivePosts();
-      return setLoaded(true);
-  }, searchTerm)
+    async function getTweets(){
+    var total=[];
+    console.log(searchTerm)
+    for( let i = 0; i<searchTerm.length; i++){
+     let response = await fetch(`http://localhost:4000/api/twits/${searchTerm[i]}`)
+     let json = await response.json()
+     console.log(json)
+     json.messages.forEach(element => {
+       element["ticker"]=searchTerm[i];
+       total.push(element);
+     });
+
+    }
+  setTweets([...total])
+  }
+    getTweets();
+    
+  },[searchTerm, update])
+
   useEffect(() => {
-      if (loaded) {
-          console.log("hello")
-          
-          setLoaded(false)
-          setUpdate(true)
-      }
-  }, [tweets]);
+    let updateInterval = setTimeout(() => {
+        setLoaded(prestate=>!prestate)
+        setUpdate(state=>!state)
+    }, 1000)
+
+
+}, [loaded])
+  const handleDelete=(e)=>{
+    console.log(e.target.value);
+    setSearchTerm(prevstate=>prevstate.filter(el=>el!==e.target.value))
+    
+    setUpdate(prevstate=>!prevstate)
+  
+  }
+  
   const handleSearchType = (e)=>{
     setSearchType(e.target.value)
   }
   const handleSearch = (e) => {
-      setSearchTerm(prevstate=>[...prevstate, e.target.value);
+      setSearchTerm(prevstate=>[...prevstate, searchType.toUpperCase()]);
+      setSearchType("");
+      setUpdate(prevstate=>!prevstate)
   }
-
-  if (update) {
-      let gigCount = 0;
-      for (let i = 0; i < tweets.length; i++) {
-          if (tweets[i].compare) 
-              gigCount++;
-          }
-     
+const filtered=tweets.sort(function(a, b){
+  return moment(b.created_at).format('X')-moment(a.created_at).format('X')
+});
+     console.log("f",filtered)
  
   return (
       <div>
@@ -66,19 +87,16 @@ function App({tweets, receivePosts, ownProps}) {
                           </MDBCol>
                           <MDBCol md="9" sm="12">
                               <MDBRow>
-                                  <h1>BRowse Stock Tips
+                                  <h1>Browse Stock Tweet Tips
                                   </h1>
                               </MDBRow>
                               <MDBRow>
-                                  <MDBCol md="2" sm="5">{tweets.length} results</MDBCol>
+                                {searchTerm.length==0 ? "Tickers show here": searchTerm.map(ticker=>{
+                                  return <MDBCol md="2" sm="5">{tweets.filter(el=>el.ticker==ticker).length} {ticker}<MDBBtn value={ticker} onClick={handleDelete}>X</MDBBtn></MDBCol>
+                                })}
+                                  
                                   <MDBCol auto></MDBCol>
-                                  <MDBCol md="2" sm="2">
-                                      <select name="type" onChange={(e)=>handleCategory(e)}>
-                                          <option selected value="">Best Match</option>
-                                          <option value="Courier">Courier</option>
-                                          <option value="Chauffeur">Chauffeur</option>
-                                      </select>
-                                  </MDBCol>
+                                  
                                   
                               </MDBRow>
                               <MDBRow>
@@ -89,16 +107,12 @@ function App({tweets, receivePosts, ownProps}) {
 
                               <MDBRow>
 
-                                  {!update
-                                      ? <Spinner
-                                              style={{
-                                              width: '3rem',
-                                              height: '3rem'
-                                          }}
-                                              type="gMDBRow"/>
-                                      : filtered.length > 0 && filtered.map(twit => {
+                                  {filtered.length == 0
+                                      ? "Search for a ticker symbol to see Tweets"
+                                      :  filtered.map(twit => {console.log(twit)
                                           return (
-                                              <MDBCol md="4" xs="12" sm="6"><InfoCard item={twit}  key={gig.id}/></MDBCol>
+                                              <MDBCol md="6" xs="12" sm="6"><InfoCard item={twit}  key={twit.id}/></MDBCol>
+                                              
                                           )
                                       })}
                               </MDBRow>
@@ -111,13 +125,5 @@ function App({tweets, receivePosts, ownProps}) {
       </div>
   );
 }
-function mapStatetoProps(state, ownProps) {
-  return {tweets: state.tweets, ownProps: ownProps}
-}
-function mapDispatchToProps(dispatch) {
-  return {
-      
-      receivePosts: (symbols) => dispatch(receivePosts())
-  }
-}
-export default connect(mapStatetoProps, mapDispatchToProps)(App);
+
+export default App;

@@ -2,7 +2,7 @@
 import React from 'react';
 import { MDBBtn, MDBCard, MDBCardBody, MDBCardImage, MDBCardTitle, MDBCardText, MDBCol } from 'mdbreact';
 import Moment from 'react-moment'
-const InfoCard = ({twit}) => {
+const InfoCard = (props) => {
     const calendarStrings = {
         lastDay : '[Yesterday at] LT',
         sameDay : '[Today at] LT',
@@ -13,18 +13,18 @@ const InfoCard = ({twit}) => {
     };
     
   return (
-    <MDBCol>
+    
       <MDBCard style={{ width: "22rem" }}>
         <MDBCardBody>
-          <MDBCardTitle><Moment fromNow={true} calendar={calendarStrings} date={twit.created_at}/></MDBCardTitle>
+          <MDBCardTitle><Moment fromNow={true} calendar={calendarStrings} date={props.item.created_at}/></MDBCardTitle>
           <MDBCardText>
-          {twit.body}
+          {props.item.body}
           </MDBCardText>
           
         </MDBCardBody>
       </MDBCard>
-    </MDBCol>
+   
   )
 }
 
-export default CardExample;
+export default InfoCard;
