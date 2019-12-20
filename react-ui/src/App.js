@@ -21,7 +21,7 @@ function App() {
     var total=[];
     console.log(searchTerm)
     for( let i = 0; i<searchTerm.length; i++){
-     let response = await fetch(`http://localhost:4000/api/twits/${searchTerm[i]}`)
+     let response = await fetch(`/api/twits/${searchTerm[i]}`)
      let json = await response.json()
      console.log(json)
      json.messages.forEach(element => {
