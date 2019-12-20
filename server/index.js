@@ -5,8 +5,9 @@ const express = require('express');
 const path = require('path');
 const cluster = require('cluster');
 const numCPUs = require('os').cpus().length;
-
-const PORT = process.env.PORT || 5000;
+const async = require('express-async-await');
+const fetch = require('node-fetch');
+const PORT = process.env.PORT || 4000;
 const getBearerToken = require('get-twitter-bearer-token')
 const Twitter = require('twitter');
 
@@ -27,10 +28,27 @@ if (cluster.isMaster) {
   const app = express();
 
   // Priority serve any static files.
-  app.use(express.static(path.resolve(__dirname, '../react-ui/build')));
+  app.use(express.static(path.resolve(__dirname, '../react-ui/public')));
 
   // Answer API requests.
-  app.get('/api/:stock', function (req, res) {
+  app.get('/api/twits/:stock', async function (req, res){
+    var responseData
+    const twitsData = (stock)=>{
+        return fetch(`https://api.stocktwits.com/api/2/streams/symbol/${stock}.json`)
+    }
+    const processData = async () => {
+        const twits = await twitsData(req.params.stock);
+        responseData = await twits.json()
+        console.log(responseData);
+    }
+    processData();
+    setTimeout(()=>{
+        res.set('Content-Type', 'application/json');
+              res.send(responseData);
+            res.end},500)
+  });
+  
+  app.get('/api/twitter/:stock', function (req, res) {
     var key = process.env.TWITTER_CONSUMER_KEY;
     var secret = process.env.TWITTER_SECRET_KEY;
     var allTweets={a:0};
@@ -56,8 +74,9 @@ if (cluster.isMaster) {
   });
 
   // All remaining requests return the React app, so it can handle routing.
-  app.get('*', function(request, response) {
-    response.sendFile(path.resolve(__dirname, '../react-ui/build', 'index.html'));
+  app.get('/\//', function(request, response) {
+      console.log("hi")
+    response.sendFile(path.resolve(__dirname, '../react-ui/public', 'index.html'));
   });
 
   app.listen(PORT, function () {
