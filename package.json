@@ -20,7 +20,7 @@
     "express-async-await": "^1.1.0",
     "get-twitter-bearer-token": "^1.0.0",
     
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^2.6.7",
    
     "twitter": "^1.7.1"
   }
