@@ -16,7 +16,7 @@
   "dependencies": {
     "cra-template-redux-starter-kit": "^1.0.2",
     "dotenv": "^8.2.0",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "express-async-await": "^1.1.0",
     "get-twitter-bearer-token": "^1.0.0",
     
